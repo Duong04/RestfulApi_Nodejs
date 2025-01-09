@@ -1,4 +1,5 @@
 import PostService from "../../services/post.service";
+import { successResponse, errorResponse } from "../../utils/response";
 
 class PostController {
     async all(req, res) {

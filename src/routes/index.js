@@ -3,7 +3,7 @@ import categories from './categories.js';
 
 const versionApi = process.env.VERSION_API;
 const route = (app) => {
-    app.use(`/posts`, posts);
+    app.use(`${versionApi}/posts`, posts);
     app.use(`${versionApi}/categories`, categories);
 }
 

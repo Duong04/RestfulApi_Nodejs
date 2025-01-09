@@ -1,5 +1,6 @@
 import CategoryService from "../../services/category.service";
 import { successResponse, errorResponse } from "../../utils/response";
+import { validationResult } from 'express-validator';
 
 class CategoryController {
     async all(req, res) {
@@ -23,6 +24,11 @@ class CategoryController {
     }
 
     async create(req, res) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        
         try {
             
             const category = await CategoryService.create(req.body);
