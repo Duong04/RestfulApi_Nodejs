@@ -32,6 +32,16 @@ class AuthController {
             errorResponse(res, error);
         }
     }
+
+    async logout(req, res) {
+        try {
+            await AuthService.logout(req);
+
+            successResponse(res, null, 'Logout Successfully');
+        } catch (error) {
+            errorResponse(res, error);
+        }
+    }
 }
 
 export default new AuthController();

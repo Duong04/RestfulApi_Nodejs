@@ -1,5 +1,6 @@
 import User from "../app/models/user.model";
 import jwt from "jsonwebtoken";
+import { addToBlacklist } from "../utils/blacklist";
 
 class AuthService {
     async register(data) {
@@ -23,6 +24,21 @@ class AuthService {
         const token = this.generateToken(user);
 
         return {access_token: token, user: user};
+    }
+
+    async logout(req) {
+        const authHeader = req.header('Authorization');
+        const token = authHeader && authHeader.split(' ')[1];
+
+        if (!token) {
+            throw new Error('Token không hợp lệ.');
+        }
+
+        const decoded = jwt.decode(token);
+        const expiresIn = decoded.exp - Math.floor(Date.now() / 1000); 
+
+        await addToBlacklist(token, expiresIn);
+        return true;
     }
 
     generateToken = (user) => {

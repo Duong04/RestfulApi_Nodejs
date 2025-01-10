@@ -1,7 +1,8 @@
 import { response } from 'express';
 import jwt from 'jsonwebtoken';
+import { isBlacklisted } from '../../utils/blacklist';
 
-export const auth = (req, res, next) => {
+export const auth = async (req, res, next) => {
     const authHeader = req.header('Authorization');
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -10,6 +11,11 @@ export const auth = (req, res, next) => {
     }
 
     try {
+        const blacklisted = await isBlacklisted(token);
+        if (blacklisted) {
+            return res.status(401).json({ message: "Token đã bị vô hiệu hóa." });
+        }
+
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         req.user = decoded;

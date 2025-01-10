@@ -3,6 +3,7 @@ import "dotenv/config";
 import cors from 'cors';
 import route from './routes';
 import connect from './configs/db';
+import "./utils/redis.js";
 
 connect();
 
