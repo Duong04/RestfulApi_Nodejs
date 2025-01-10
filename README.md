@@ -1,108 +1,115 @@
-# Express-Validator Cheatsheet
+# Express Validator Documentation
 
-Express-validator cung cấp nhiều phương thức để xác thực dữ liệu trong các ứng dụng Node.js. Dưới đây là danh sách các thuộc tính và cách sử dụng chính của express-validator.
+## Tổng quan
+`express-validator` cung cấp các phương thức mạnh mẽ để xác thực và xử lý các yêu cầu HTTP. Dưới đây là danh sách đầy đủ các phương thức được sử dụng trong thư viện này.
 
-## 1. **Core Validation Methods**
-### 1.1. Kiểm tra giá trị cơ bản
-- **`notEmpty()`**: Kiểm tra trường không được để trống.
-- **`isEmpty()`**: Kiểm tra trường phải để trống.
-- **`isString()`**: Kiểm tra trường có phải chuỗi.
-- **`isNumeric()`**: Kiểm tra trường có phải số.
-- **`isBoolean()`**: Kiểm tra trường có phải giá trị boolean.
-- **`isInt()`**: Kiểm tra trường có phải số nguyên.
-- **`isFloat()`**: Kiểm tra trường có phải số thực.
-- **`isDate()`**: Kiểm tra trường có phải định dạng ngày.
+## Các phương thức
 
-### 1.2. Kiểm tra định dạng nâng cao
-- **`isEmail()`**: Kiểm tra định dạng email hợp lệ.
-- **`isURL()`**: Kiểm tra định dạng URL hợp lệ.
-- **`isUUID()`**: Kiểm tra định dạng UUID hợp lệ.
-- **`isBase64()`**: Kiểm tra chuỗi có phải Base64.
+### Validation Chain Methods
+1. **.not()**
+   - Đảo ngược logic của validator hoặc validator chain.
+2. **.exists()**
+   - Kiểm tra nếu trường tồn tại trong yêu cầu.
+3. **.isEmpty()**
+   - Kiểm tra nếu trường trống.
+4. **.notEmpty()**
+   - Kiểm tra nếu trường không trống.
+5. **.equals(comparison)**
+   - Kiểm tra nếu giá trị trường bằng giá trị cung cấp.
+6. **.contains(seed)**
+   - Kiểm tra nếu giá trị chứa chuỗi được chỉ định.
+7. **.matches(pattern, [modifiers])**
+   - Kiểm tra nếu giá trị khớp với regex hoặc chuỗi regex.
 
-### 1.3. Kiểm tra giá trị trong một tập hợp
-- **`isIn(array)`**: Kiểm tra giá trị thuộc tập hợp.
-  ```javascript
-  body('status')
-    .isIn(['pending', 'approved', 'rejected'])
-    .withMessage('Status must be one of: pending, approved, rejected.');
-  ```
+### String Validators
+1. **.isLength({ min, max })**
+   - Kiểm tra nếu chuỗi có độ dài nằm trong khoảng.
+2. **.isEmail()**
+   - Kiểm tra nếu chuỗi là email hợp lệ.
+3. **.isURL([options])**
+   - Kiểm tra nếu chuỗi là URL hợp lệ.
+4. **.isUUID([version])**
+   - Kiểm tra nếu chuỗi là UUID hợp lệ.
+5. **.isMobilePhone(locale, [options])**
+   - Kiểm tra nếu chuỗi là số điện thoại hợp lệ.
+6. **.isCreditCard()**
+   - Kiểm tra nếu chuỗi là số thẻ tín dụng hợp lệ.
 
-### 1.4. Tự định nghĩa logic kiểm tra
-- **`custom(callback)`**: Tự định nghĩa hàm kiểm tra.
-  ```javascript
-  body('category')
-    .custom((value) => {
-      const validCategories = ['food', 'electronics', 'fashion'];
-      if (!validCategories.includes(value)) {
-        throw new Error('Invalid category type.');
-      }
-      return true;
-    });
-  ```
+### Number Validators
+1. **.isInt([options])**
+   - Kiểm tra nếu giá trị là số nguyên hợp lệ.
+2. **.isFloat([options])**
+   - Kiểm tra nếu giá trị là số thực hợp lệ.
+3. **.isNumeric()**
+   - Kiểm tra nếu giá trị chỉ chứa số.
+4. **.isDecimal()**
+   - Kiểm tra nếu giá trị là số thập phân hợp lệ.
+5. **.isDivisibleBy(number)**
+   - Kiểm tra nếu giá trị chia hết cho số chỉ định.
 
-## 2. **Sanitization Methods**
-- **`trim()`**: Loại bỏ khoảng trắng ở đầu và cuối chuỗi.
-- **`escape()`**: Loại bỏ các ký tự đặc biệt (HTML entities).
-- **`toLowerCase()`**: Chuyển giá trị về chữ thường.
-- **`toUpperCase()`**: Chuyển giá trị về chữ hoa.
-- **`toInt()`**: Chuyển chuỗi thành số nguyên.
-- **`toFloat()`**: Chuyển chuỗi thành số thực.
+### Date Validators
+1. **.isDate()**
+   - Kiểm tra nếu giá trị là ngày hợp lệ.
+2. **.isAfter([date])**
+   - Kiểm tra nếu giá trị là ngày sau ngày chỉ định.
+3. **.isBefore([date])**
+   - Kiểm tra nếu giá trị là ngày trước ngày chỉ định.
 
-## 3. **Validation Error Handling**
-### 3.1. Lấy lỗi xác thực
+### Boolean Validators
+1. **.isBoolean()**
+   - Kiểm tra nếu giá trị là boolean hợp lệ.
+2. **.isIn(values)**
+   - Kiểm tra nếu giá trị nằm trong tập hợp cung cấp.
+
+### Array Validators
+1. **.isArray()**
+   - Kiểm tra nếu giá trị là một mảng.
+2. **.isArray({ min, max })**
+   - Kiểm tra nếu mảng có số phần tử trong khoảng chỉ định.
+
+### Custom Validators
+1. **.custom(validator)**
+   - Cho phép viết logic xác thực tùy chỉnh.
+2. **.customSanitizer(sanitizer)**
+   - Cho phép viết logic làm sạch tùy chỉnh.
+
+### Sanitization Chain Methods
+1. **.trim()**
+   - Loại bỏ khoảng trắng thừa ở đầu và cuối chuỗi.
+2. **.normalizeEmail([options])**
+   - Chuẩn hóa email.
+3. **.toInt()**
+   - Chuyển đổi giá trị thành số nguyên.
+4. **.toFloat()**
+   - Chuyển đổi giá trị thành số thực.
+5. **.toBoolean()**
+   - Chuyển đổi giá trị thành boolean.
+6. **.escape()**
+   - Escape các ký tự HTML để ngăn tấn công XSS.
+
+### Error Handling
+1. **.withMessage(message)**
+   - Thêm thông báo lỗi tùy chỉnh nếu một validator thất bại.
+
+## Hướng dẫn sử dụng
 ```javascript
-const { validationResult } = require('express-validator');
+import { check, validationResult } from 'express-validator';
 
-app.post('/example', [
-  body('email').isEmail().withMessage('Invalid email.'),
+// Routes
+app.post('/category', [
+  check('name').notEmpty().withMessage('Name is required'),
+  check('description').isLength({ min: 10 }).withMessage('Description must be at least 10 characters long'),
 ], (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  res.send('Validation passed!');
+
+  // Xử lý logic thêm danh mục
+  res.status(201).json({ message: 'Category created successfully' });
 });
 ```
 
-## 4. **Ví dụ Validation Enum (Tập hợp giá trị)**
-### 4.1. Sử dụng `isIn()`
-```javascript
-const { body } = require('express-validator');
-
-const validateStatus = [
-  body('status')
-    .isIn(['active', 'inactive', 'pending'])
-    .withMessage('Status must be one of: active, inactive, pending.'),
-];
-```
-
-### 4.2. Sử dụng `custom()` cho enum phức tạp
-```javascript
-const { body } = require('express-validator');
-
-const CategoryType = {
-  FOOD: 'food',
-  ELECTRONICS: 'electronics',
-  FASHION: 'fashion',
-};
-
-const validateCategory = [
-  body('category')
-    .custom((value) => {
-      if (!Object.values(CategoryType).includes(value)) {
-        throw new Error(`Category must be one of: ${Object.values(CategoryType).join(', ')}`);
-      }
-      return true;
-    })
-    .withMessage('Invalid category type.'),
-];
-```
-
-## 5. **Best Practices**
-- **Tách biệt logic validation**: Sử dụng middleware để xử lý validation.
-- **Đặt chung validator vào file riêng**: Dễ dàng tái sử dụng và quản lý.
-- **Xử lý lỗi tập trung**: Kiểm tra `validationResult()` và phản hồi lỗi theo định dạng JSON.
-
-## 6. **Thư viện Tham khảo**
+## Tài liệu tham khảo
 - [Express Validator Documentation](https://express-validator.github.io/docs/)
 
