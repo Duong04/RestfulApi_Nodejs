@@ -1,6 +1,9 @@
 import User from "../app/models/user.model";
 import jwt from "jsonwebtoken";
 import { addToBlacklist } from "../utils/blacklist";
+import redis from "../utils/redis";
+import { v4 as uuidv4 } from 'uuid';
+import { json } from "express";
 
 class AuthService {
     async register(data) {
@@ -21,9 +24,10 @@ class AuthService {
             throw new Error('Email hoặc mật khẩu không đúng');
         }
 
-        const token = this.generateToken(user);
-
-        return {access_token: token, user: user};
+        const refreshToken = uuidv4(); 
+        await redis.set(refreshToken, JSON.stringify({ id: user._id, role: user.role, fullname: user.fullname, avatar: user.avatar, email: email }), 'EX', 7 * 24 * 60 * 60);
+    
+        return {access_token: token, refresh_token: refreshToken, user: user};
     }
 
     async logout(req) {
@@ -41,8 +45,28 @@ class AuthService {
         return true;
     }
 
+    async refreshToken(req) {
+        const { refreshToken } = req.body;
+
+        if (!refreshToken) {
+            throw new Error('Refresh Token không được cung cấp!');
+        }
+
+        const userData = await redis.get(refreshToken);
+
+        if (!userData) {
+            throw new Error('Refresh Token không hợp lệ hoặc đã hết hạn!');
+        }
+
+        const user = jwt.verify(userData, process.env.JWT_SECRET);
+
+        const newAccessToken = this.generateToken(user);
+
+        return {accessToken: newAccessToken};
+    }
+
     generateToken = (user) => {
-        return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        return jwt.sign({ id: user._id, role: user.role, fullname: user.fullname, avatar: user.avatar, email: email }, process.env.JWT_SECRET, { expiresIn: '1d' });
     };
 }
 
