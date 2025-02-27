@@ -42,6 +42,7 @@ class AuthService {
         const expiresIn = decoded.exp - Math.floor(Date.now() / 1000); 
 
         await addToBlacklist(token, expiresIn);
+        
         return true;
     }
 
@@ -58,7 +59,7 @@ class AuthService {
             throw new Error('Refresh Token không hợp lệ hoặc đã hết hạn!');
         }
 
-        const user = jwt.verify(userData, process.env.JWT_SECRET);
+        const user = JSON.parse(userData); 
 
         const newAccessToken = this.generateToken(user);
 
