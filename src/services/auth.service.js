@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 import { addToBlacklist } from "../utils/blacklist";
 import redis from "../utils/redis";
 import { v4 as uuidv4 } from 'uuid';
-import { json } from "express";
 
 class AuthService {
     async register(data) {
@@ -18,16 +17,17 @@ class AuthService {
         if (!user) {
             throw new Error('Email hoặc mật khẩu không đúng');
         }
-
+        
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
             throw new Error('Email hoặc mật khẩu không đúng');
         }
-
+        
+        const token = this.generateToken(user);
         const refreshToken = uuidv4(); 
-        await redis.set(refreshToken, JSON.stringify({ id: user._id, role: user.role, fullname: user.fullname, avatar: user.avatar, email: email }), 'EX', 7 * 24 * 60 * 60);
-    
-        return {access_token: token, refresh_token: refreshToken, user: user};
+        await redis.set(refreshToken, JSON.stringify({ id: user._id, role: user.role, fullname: user.fullname, avatar: user.avatar, email: user.email }), 'EX', 7 * 24 * 60 * 60);
+
+        return {access_token: token, refresh_token: refreshToken, user: { id: user._id, role: user.role, fullname: user.fullname, avatar: user.avatar, email: user.email }};
     }
 
     async logout(req) {
@@ -66,7 +66,7 @@ class AuthService {
     }
 
     generateToken = (user) => {
-        return jwt.sign({ id: user._id, role: user.role, fullname: user.fullname, avatar: user.avatar, email: email }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        return jwt.sign({ id: user._id, role: user.role, fullname: user.fullname, avatar: user.avatar, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1d' });
     };
 }
 

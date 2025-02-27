@@ -6,7 +6,7 @@ class PostService {
     }
 
     async findById(id) {
-        return await Post.findById(id);
+        return await Post.findById(id).populate('category', ['_id', 'name']);
     }
 
     async create(data) {

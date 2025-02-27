@@ -36,8 +36,9 @@ const Post = new Schema(
             required: false,
             unique: true
         },
-        category_id: {
-            type: String,
+        category: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Category",  
             required: true,
         }
     },

@@ -21,7 +21,7 @@ export const validateCategory = [
         .trim()
         .isIn(['active', 'inactive', 'draft'])
         .withMessage('Status must be one of: active, inactive, draft'),
-    body('category_id')
+    body('category')
         .trim()
         .exists()
         .notEmpty()
